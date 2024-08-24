@@ -22,7 +22,10 @@ def save_images(subreddit_name = "ArtPorn"):
 
     count = 0
     names = []
-    for post in reddit.subreddit(f"{subreddit_name}").top(time_filter="week",limit=10):
+
+    with open("titles.txt","w") as f:
+        f.write("")
+    for post in reddit.subreddit(f"{subreddit_name}").top(time_filter="day",limit=10):
         url = post.url
         print(url)
         file_extension = url.split('.')[-1]
@@ -42,7 +45,7 @@ def get_sorted_image_paths(directory):
     sorted_image_paths = [os.path.join(directory, path) for path in sorted_image_paths]
     return sorted_image_paths
 
-def build_video(names, image_paths:list,duration=2,transition_duration=0.5,output_fname="output.mp4"):
+def build_video(names, image_paths:list,duration=2,transition_duration=0.5,output_fname="output.mp4",add_text=False):
 
     """
     # Builds out a video when given 
@@ -59,10 +62,15 @@ def build_video(names, image_paths:list,duration=2,transition_duration=0.5,outpu
     for i,path in enumerate(image_paths):
         command += f'-i {path} \\\n'
 
+    command += f'-ss \'{random.choice(range(200))}\' -i sounds/chopin.m4a \\\n'
+
     command +=  ' -filter_complex "\\\n'
 
     for i in range(len(image_paths)):
-        command += f'[{i}]scale=w=1080:h=ih*1080/iw,scale=w=4000:h=ih*4000/iw,zoompan=z=\'zoom+0.001\':x=\'iw/2-iw/zoom/2\':y=\'ih/2-ih/zoom/2\':d=100:s=1080x1920,drawtext=text=\'{names[i]}\':fontfile=/System/Library/Fonts/Helvetica.ttc:fontsize=30:box=1:boxcolor=white:boxborderw=40:fontcolor=black:x=(w-text_w)/2:y=h-150,format=yuv420p[p{i}]; \\\n'
+        text = f",drawtext=text=\'{names[i].strip()}\':fontfile=/System/Library/Fonts/Helvetica.ttc:fontsize=30:box=1:boxcolor=white:boxborderw=40:fontcolor=black:x=(w-text_w)/2:y=h-150"
+        if not add_text:
+            text = ""
+        command += f'[{i}]scale=w=1080:h=ih*1080/iw,scale=w=4000:h=ih*4000/iw,zoompan=z=\'zoom+0.001\':x=\'iw/2-iw/zoom/2\':y=\'ih/2-ih/zoom/2\':d=100:s=1080x1920{text},format=yuv420p[p{i}]; \\\n'
 
     #global because we need it for map
     i = 0
@@ -76,7 +84,7 @@ def build_video(names, image_paths:list,duration=2,transition_duration=0.5,outpu
 
     command += '" \\\n'
 
-    command += f'-map "[f{i-1}]" -t {len(image_paths)*(duration)}  -pix_fmt yuv420p  -vcodec libx264  {output_fname}'
+    command += f'-map "[f{i-1}]" -map {len(image_paths)}:a:0 -t {len(image_paths)*(duration)}  -pix_fmt yuv420p  -vcodec libx264 -preset ultrafast {output_fname}'
 
     print(command)
 
@@ -84,7 +92,7 @@ def build_video(names, image_paths:list,duration=2,transition_duration=0.5,outpu
     print("Video created")
 
 
-subreddit_name = "ArtPorn"
+subreddit_name = "museum"
 
 save_images(subreddit_name)
 
@@ -92,7 +100,4 @@ images = get_sorted_image_paths(subreddit_name)
 with open("titles.txt","r") as f:
     names = f.readlines()
 
-with open("titles.txt","w") as f:
-    f.write("")
-
-build_video(names,images,2,0.5,"output.mp4")
+build_video(names,images,2,0.5,"output.mp4",add_text=True)
