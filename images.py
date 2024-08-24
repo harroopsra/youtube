@@ -95,5 +95,4 @@ with open("titles.txt","r") as f:
 with open("titles.txt","w") as f:
     f.write("")
 
-#names = ['Johnson Johnson Johnson Johnson Johnson Johnson Johnson','Smith Johnson Johnson Johnson Johnson Johnson','Williams','John','Andy','Joe','Johnson','Smith','Williams','John']
 build_video(names,images,2,0.5,"output.mp4")
