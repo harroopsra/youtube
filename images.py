@@ -101,3 +101,8 @@ with open("titles.txt","r") as f:
     names = f.readlines()
 
 build_video(names,images,2,0.5,"output.mp4",add_text=True)
+
+
+#Might be worth checking out ways to even automate this by having a greater for loop for different subreddits
+#And the names of the output files can be different
+#ANd likely some way to automate writing descritpions and titles (probably gpt4)
