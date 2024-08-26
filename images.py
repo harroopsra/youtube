@@ -65,11 +65,13 @@ def build_video(names, image_paths:list,duration=2,transition_duration=0.5,outpu
     command +=  ' -filter_complex "\\\n'
 
     for i in range(len(image_paths)):
-        #names[i] = re.sub('"','',names[i])
-        #names[i] = re.sub("'","",names[i])
-        #text = f",drawtext=text=\'{names[i].strip()}\':fontfile=/System/Library/Fonts/Helvetica.ttc:fontsize=30:box=1:boxcolor=white:boxborderw=40:fontcolor=black:x=(w-text_w)/2:y=h-150"
         if not add_text:
             text = ""
+        else:
+            names[i] = re.sub('"','',names[i])
+            names[i] = re.sub("'","",names[i])
+            text = f",drawtext=text=\'{names[i].strip()}\':fontfile=/System/Library/Fonts/Helvetica.ttc:fontsize=30:box=1:boxcolor=white:boxborderw=40:fontcolor=black:x=(w-text_w)/2:y=h-150"
+        
         command += f'[{i}]scale=w=1080:h=ih*1080/iw,pad=\'1080:1920:(ow-iw)/2:(oh-ih)/2\',scale=w=4000:h=ih*4000/iw,zoompan=z=\'zoom+0.001\':x=\'iw/2-iw/zoom/2\':y=\'ih/2-ih/zoom/2\':d=100:s=1080x1920{text},format=yuv420p[p{i}]; \\\n'
 
     #global because we need it for map
@@ -115,7 +117,9 @@ for subreddit in ["ArtPorn","Art","museum"]:
 
 # TODO
 
-# Might be worth checking out ways to automate writing descritpions and titles (probably gpt4) when titles are given
+# Might be worth checking out ways to automate writing descritpions and titles for the videos (probably gpt4) when titles are given
+
+# Need to split up longer titles so that they appear fully in the videos
 
 # Write a function that processes all the images to make them 1080 by 1920
 # This bypasses the padding step
