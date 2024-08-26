@@ -101,17 +101,6 @@ def remove_files_from_dir(folder):
         except Exception as e:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-"""
-subreddit_name = "streetart"
-
-save_images(subreddit_name)
-
-images = get_sorted_image_paths(subreddit_name)
-with open("titles.txt","r") as f:
-    names = f.readlines()
-
-build_video(names,images,1,0.4,"output.mp4",add_text=False)
-"""
 
 for subreddit in ["ArtPorn","Art","museum"]:
     remove_files_from_dir(subreddit)           # Delete remnants from previous steps
